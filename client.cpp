@@ -1,16 +1,14 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
-
+#include <netdb.h>
 #include <iostream>
-
 #include <unistd.h>
-
 #include "common.h"
 
 inline void usage(const char* prog)
 {
   using namespace std;
-  cerr << "usage % " << prog << "[-p port]" << '\n';
+  cerr << "usage % " << prog << "[-p port][-h host][-m msg]" << '\n';
 }
 
 int main(int argc, char** argv)
@@ -18,9 +16,13 @@ int main(int argc, char** argv)
   using namespace std;
 
   int port = 128;
-  for (int opt; (opt = getopt(argc, argv, "p:")) != -1 ; ) {
+  string host = "localhost";
+  string msg = "hello world";
+  for (int opt; (opt = getopt(argc, argv, "p:h:m:")) != -1 ; ) {
     switch (opt) {
     case 'p': port = atoi(optarg); break;
+    case 'h': host = optarg;       break;
+    case 'm': msg = optarg;        break;
     default: usage(argv[0]);       return 1;
     }
   }
@@ -37,45 +39,29 @@ int main(int argc, char** argv)
     ~sweeper() { close(desc); }
   } sweeper {desc};
 
-  sockaddr_in addr = {AF_INET, (in_port_t)port, { INADDR_ANY } };
-  if (bind(desc, (sockaddr*)&addr, sizeof addr) < 0) {
-    cerr << "bind failed" << '\n';
-    return err_info();
+  hostent* ent = gethostbyname(host.c_str());
+  if (!ent) {
+    cerr << "gethostbyname failed" << '\n';
+    return 1;
   }
-  
-  if (listen(desc, SOMAXCONN) < 0) {
-    cerr << "listen failed" << '\n';
-    return err_info();
-  }
-
-  sockaddr tmp;
-  socklen_t len;
-  if (accept(desc, &tmp, &len) < 0) {
-    cerr << "accept failed" << '\n';
-    return err_info();
+  auto in = *(in_addr_t*)*ent->h_addr_list;
+  sockaddr_in addr = { AF_INET, (in_port_t)port, { in } };
+  if (connect(desc, (sockaddr*)&addr, sizeof addr) < 0) {
+    cerr <<"connect failed" << '\n';
+    return 1;
   }
 
-  cout << "accept sucessed" << '\n';
-
-#if 0
-  string msg = "howdy";
   if (write(desc, &msg[0], msg.length()+1) < 0) {
     cerr << "write failed" << '\n';
     return 1;
   }
-#endif
-  return 0;
-}
 
-void debug(int desc)
-{
-  using namespace std;
   char buffer[256];
-  int n = read(desc, &buffer, sizeof buffer);
+  int n = read(desc, &buffer[0], sizeof buffer);
   if (n < 0) {
     cerr << "read failed" << '\n';
-    return (void)err_info();
+    return 1;
   }
-  cout << buffer << '\n';
+ 
+  return 0;
 }
-
