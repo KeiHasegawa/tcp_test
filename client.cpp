@@ -21,7 +21,7 @@ int main(int argc, char** argv)
   int port = 200;
 #endif  
   string host = "localhost";
-  string msg = "hello world";
+  string msg = getenv("USER");
   for (int opt; (opt = getopt(argc, argv, "p:h:m:")) != -1 ; ) {
     switch (opt) {
     case 'p': port = atoi(optarg); break;

@@ -1,10 +1,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
-
-#include <iostream>
-
 #include <unistd.h>
-
+#include <iostream>
 #include "common.h"
 
 inline void usage(const char* prog)
@@ -41,9 +38,9 @@ int main(int argc, char** argv)
     ~sweeper() { close(desc); }
   } sweeper {desc};
 #if 1
-  sockaddr_in addr = {AF_INET, (in_port_t)port, { INADDR_ANY } };
+  sockaddr_in addr = {AF_INET, (in_port_t)port };
 #else
-  sockaddr_in addr = {AF_INET, htons(port), { htonl(INADDR_ANY) } };
+  sockaddr_in addr = {AF_INET, htons(port) };
 #endif  
   if (bind(desc, (sockaddr*)&addr, sizeof addr) < 0) {
     cerr << "bind failed" << '\n';
@@ -81,7 +78,8 @@ int main(int argc, char** argv)
   }
   cout << buffer << '\n';
 
-  string msg = "howdy";
+  string msg = buffer;
+  msg += ", hello";
   if (write(fd, &msg[0], msg.length()+1) < 0) {
     cerr << "write failed" << '\n';
     return err_info();

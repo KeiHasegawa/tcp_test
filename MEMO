@@ -20,25 +20,22 @@ Windows DEfender ファイアウォール
 返っている.
 
 しかし, linux で動作させて再び Windows で動作させてみたところ
-accept は成功している.
+accept は成功している. 何か変更したのだろうけども覚えていない.
 
-現状 Windows 版は
-
-server 側も client 側も read でブロックしている.
-試しに server 側で write を先にしてみたところ
-
-errno = ENOTCONN
-
-で fail している.
-
-linux 版
-現状 accept は成功しているが
-read と write が期待しない動作になっている.
-
-read は errno = ENOTCONN でエラーしているらしい
-
-write の呼び出しで SIGPIPE を受けている.
+間違えていた勘違いしていたのは read や write は accept の戻り値を
+ファイルでスクリプタとして指定するのが正しい. socket の戻り値を使用していた.
 
 htons や htonl を使用すると実は期待通り動作していない.
 バイトオーダーを変更しないほうが実は期待通り動作している.
 
+-> pure-ftpd を動作させてみたところ
+
+bind の第二引数
+bind(listenfd, res->ai_addr, ...)
+では
+
+p/x *(struct sockaddr_in*)res->ai_addr
+$7 = {sin_family = 0x2, sin_port = 0x1500, sin_addr = {s_addr = 0x0},
+  sin_zero = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}}
+
+のようになっていて, 0x15 = 21 だからやはり, 反転している
