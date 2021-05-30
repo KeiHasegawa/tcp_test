@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 #if 1
   sockaddr_in addr = { AF_INET, (in_port_t)port, { in } };
 #else
-  sockaddr_in addr = { AF_INET, htons(port), { in } };
+  sockaddr_in addr = { AF_INET, htons(port), { htonl(in) } };
 #endif
   if (connect(desc, (sockaddr*)&addr, sizeof addr) < 0) {
     cerr <<"connect failed" << '\n';

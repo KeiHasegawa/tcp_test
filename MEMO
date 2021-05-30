@@ -19,7 +19,17 @@ Windows DEfender ファイアウォール
 次に実行したときに listen が成功するのかと思ったがやはり負の値が
 返っている.
 
+しかし, linux で動作させて再び Windows で動作させてみたところ
+accept は成功している.
 
+現状 Windows 版は
+
+server 側も client 側も read でブロックしている.
+試しに server 側で write を先にしてみたところ
+
+errno = ENOTCONN
+
+で fail している.
 
 linux 版
 現状 accept は成功しているが

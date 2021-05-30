@@ -60,11 +60,11 @@ int main(int argc, char** argv)
 
   cout << "accept sucessed" << '\n';
 
-  extern void debug(int);
-  debug(desc);
-
   extern void debug2(int);
   debug2(desc);
+
+  extern void debug(int);
+  debug(desc);
 
   return 0;
 }
