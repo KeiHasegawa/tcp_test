@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 {
   using namespace std;
 
-  int port = 128;
+  int port = 200;
   for (int opt; (opt = getopt(argc, argv, "p:")) != -1 ; ) {
     switch (opt) {
     case 'p': port = atoi(optarg); break;
@@ -36,8 +36,11 @@ int main(int argc, char** argv)
     sweeper(int d) : desc {d} {}
     ~sweeper() { close(desc); }
   } sweeper {desc};
-
+#if 1
   sockaddr_in addr = {AF_INET, (in_port_t)port, { INADDR_ANY } };
+#else
+  sockaddr_in addr = {AF_INET, htons(port), { INADDR_ANY } };
+#endif  
   if (bind(desc, (sockaddr*)&addr, sizeof addr) < 0) {
     cerr << "bind failed" << '\n';
     return err_info();
@@ -57,13 +60,12 @@ int main(int argc, char** argv)
 
   cout << "accept sucessed" << '\n';
 
-#if 0
-  string msg = "howdy";
-  if (write(desc, &msg[0], msg.length()+1) < 0) {
-    cerr << "write failed" << '\n';
-    return 1;
-  }
-#endif
+  extern void debug2(int);
+  debug2(desc);
+
+  extern void debug(int);
+  debug(desc);
+
   return 0;
 }
 
@@ -79,3 +81,12 @@ void debug(int desc)
   cout << buffer << '\n';
 }
 
+void debug2(int desc)
+{
+  using namespace std;
+  string msg = "howdy";
+  if (write(desc, &msg[0], msg.length()+1) < 0) {
+    cerr << "write failed" << '\n';
+    return (void)err_info();
+  }
+}

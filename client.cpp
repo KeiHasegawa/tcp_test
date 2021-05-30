@@ -2,6 +2,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <iostream>
+#include <iomanip>
 #include <unistd.h>
 #include "common.h"
 
@@ -15,7 +16,7 @@ int main(int argc, char** argv)
 {
   using namespace std;
 
-  int port = 128;
+  int port = 200;
   string host = "localhost";
   string msg = "hello world";
   for (int opt; (opt = getopt(argc, argv, "p:h:m:")) != -1 ; ) {
@@ -45,7 +46,11 @@ int main(int argc, char** argv)
     return 1;
   }
   auto in = *(in_addr_t*)*ent->h_addr_list;
+#if 1
   sockaddr_in addr = { AF_INET, (in_port_t)port, { in } };
+#else
+  sockaddr_in addr = { AF_INET, htons(port), { in } };
+#endif
   if (connect(desc, (sockaddr*)&addr, sizeof addr) < 0) {
     cerr <<"connect failed" << '\n';
     return 1;
@@ -62,6 +67,12 @@ int main(int argc, char** argv)
     cerr << "read failed" << '\n';
     return 1;
   }
+
+  cout << "n = " << dec << n << '\n';
+  cout.fill('0');
+  for (int i = 0 ; i != n ;++i )
+    cout << ' ' << hex << setw(2) << int(buffer[i]);
+  cout << '\n';
  
   return 0;
 }
