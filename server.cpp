@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 #if 1
   sockaddr_in addr = {AF_INET, (in_port_t)port, { INADDR_ANY } };
 #else
-  sockaddr_in addr = {AF_INET, htons(port), { INADDR_ANY } };
+  sockaddr_in addr = {AF_INET, htons(port), { htonl(INADDR_ANY) } };
 #endif  
   if (bind(desc, (sockaddr*)&addr, sizeof addr) < 0) {
     cerr << "bind failed" << '\n';
@@ -60,11 +60,11 @@ int main(int argc, char** argv)
 
   cout << "accept sucessed" << '\n';
 
-  extern void debug2(int);
-  debug2(desc);
-
   extern void debug(int);
   debug(desc);
+
+  extern void debug2(int);
+  debug2(desc);
 
   return 0;
 }

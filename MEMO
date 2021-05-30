@@ -19,3 +19,16 @@ Windows DEfender ファイアウォール
 次に実行したときに listen が成功するのかと思ったがやはり負の値が
 返っている.
 
+
+
+linux 版
+現状 accept は成功しているが
+read と write が期待しない動作になっている.
+
+read は errno = ENOTCONN でエラーしているらしい
+
+write の呼び出しで SIGPIPE を受けている.
+
+htons や htonl を使用すると実は期待通り動作していない.
+バイトオーダーを変更しないほうが実は期待通り動作している.
+
