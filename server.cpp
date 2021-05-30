@@ -46,7 +46,7 @@ int main(int argc, char** argv)
     return err_info();
   }
   
-  if (listen(desc, SOMAXCONN) < 0) {
+  if (listen(desc, 1) < 0) {
     cerr << "listen failed" << '\n';
     return err_info();
   }
