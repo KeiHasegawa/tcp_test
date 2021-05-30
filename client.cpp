@@ -15,11 +15,8 @@ inline void usage(const char* prog)
 int main(int argc, char** argv)
 {
   using namespace std;
-#if 0
+
   int port = 12345;
-#else
-  int port = 200;
-#endif  
   string host = "localhost";
   string msg = getenv("USER");
   for (int opt; (opt = getopt(argc, argv, "p:h:m:")) != -1 ; ) {
@@ -49,11 +46,7 @@ int main(int argc, char** argv)
     return 1;
   }
   auto in = *(in_addr_t*)*ent->h_addr_list;
-#if 1
-  sockaddr_in addr = { AF_INET, (in_port_t)port, { in } };
-#else
-  sockaddr_in addr = { AF_INET, htons(port), { htonl(in) } };
-#endif
+  sockaddr_in addr = { AF_INET, htons(port), { in } };
   if (connect(desc, (sockaddr*)&addr, sizeof addr) < 0) {
     cerr <<"connect failed" << '\n';
     return 1;

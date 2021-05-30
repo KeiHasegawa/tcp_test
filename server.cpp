@@ -14,11 +14,7 @@ int main(int argc, char** argv)
 {
   using namespace std;
 
-#if 0
   int port = 12345;
-#else
-  int port = 200;
-#endif  
   for (int opt; (opt = getopt(argc, argv, "p:")) != -1 ; ) {
     switch (opt) {
     case 'p': port = atoi(optarg); break;
@@ -37,11 +33,8 @@ int main(int argc, char** argv)
     sweeper(int d) : desc {d} {}
     ~sweeper() { close(desc); }
   } sweeper {desc};
-#if 1
-  sockaddr_in addr = {AF_INET, (in_port_t)port };
-#else
+
   sockaddr_in addr = {AF_INET, htons(port) };
-#endif  
   if (bind(desc, (sockaddr*)&addr, sizeof addr) < 0) {
     cerr << "bind failed" << '\n';
     return err_info();
