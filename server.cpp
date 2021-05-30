@@ -17,7 +17,11 @@ int main(int argc, char** argv)
 {
   using namespace std;
 
+#if 0
+  int port = 12345;
+#else
   int port = 200;
+#endif  
   for (int opt; (opt = getopt(argc, argv, "p:")) != -1 ; ) {
     switch (opt) {
     case 'p': port = atoi(optarg); break;
@@ -52,41 +56,36 @@ int main(int argc, char** argv)
   }
 
   sockaddr tmp;
-  socklen_t len;
-  if (accept(desc, &tmp, &len) < 0) {
+  socklen_t len = sizeof tmp;
+  int fd = accept(desc, &tmp, &len);
+  if (fd < 0) {
     cerr << "accept failed" << '\n';
     return err_info();
   }
 
-  cout << "accept sucessed" << '\n';
+  struct sweeper2 {
+    int fd;
+    sweeper2(int f) : fd {f} {}
+    ~sweeper2() { close(fd); }
+  } sweeper2 {fd};
 
-  extern void debug2(int);
-  debug2(desc);
-
-  extern void debug(int);
-  debug(desc);
-
-  return 0;
-}
-
-void debug(int desc)
-{
-  using namespace std;
   char buffer[256];
-  int n = read(desc, &buffer, sizeof buffer);
+  int n = read(fd, &buffer, sizeof buffer);
   if (n < 0) {
     cerr << "read failed" << '\n';
-    return (void)err_info();
+    return err_info();
+  }
+  if (buffer[n-1] != '\0') {
+    cerr << "not terminated" << '\n';
+    buffer[n-1] = '\0';
   }
   cout << buffer << '\n';
-}
 
-void debug2(int desc)
-{
-  using namespace std;
   string msg = "howdy";
-  if (write(desc, &msg[0], msg.length()+1) < 0) {
+  if (write(fd, &msg[0], msg.length()+1) < 0) {
     cerr << "write failed" << '\n';
-    return (void)err_info();
+    return err_info();
   }
+
+  return 0;
 }

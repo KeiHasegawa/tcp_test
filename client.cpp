@@ -15,8 +15,11 @@ inline void usage(const char* prog)
 int main(int argc, char** argv)
 {
   using namespace std;
-
+#if 0
+  int port = 12345;
+#else
   int port = 200;
+#endif  
   string host = "localhost";
   string msg = "hello world";
   for (int opt; (opt = getopt(argc, argv, "p:h:m:")) != -1 ; ) {
@@ -68,11 +71,10 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  cout << "n = " << dec << n << '\n';
-  cout.fill('0');
-  for (int i = 0 ; i != n ;++i )
-    cout << ' ' << hex << setw(2) << int(buffer[i]);
-  cout << '\n';
- 
+  if (buffer[n-1] != '\0') {
+    cerr << "not terminated" << '\n';
+    buffer[n-1] = '\0';
+  }
+  cout << &buffer[0] << '\n';
   return 0;
 }
