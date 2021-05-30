@@ -1,4 +1,4 @@
-all:server.exe client.exe TAGS.server TAGS.client
+all:server.exe client.exe TAGS
 
 server.exe:server.cpp
 	g++ -g3 $< -o $@
@@ -12,12 +12,9 @@ ifneq (,$(findstring CYGWIN,$(UNAME)))
 	MKTAGS_P = -p d:/cygwin64 -w
 endif
 
-TAGS.server:server.exe
-	mktags.exe -e server.exe $(MKTAGS_P) -o $@
-
-TAGS.client:client.exe
-	mktags.exe -e client.exe $(MKTAGS_P) -o $@
+TAGS:server.exe client.exe
+	mktags.exe -e server.exe client.exe $(MKTAGS_P)
 
 clean:
-	rm -f server.{i,j,exe} client.{i,j,exe} TAGS.{server,client} *~
+	rm -f server.{i,j,exe} client.{i,j,exe} TAGS *~
 
