@@ -68,6 +68,6 @@ int main(int argc, char** argv)
     cerr << "not terminated" << '\n';
     buffer[n-1] = '\0';
   }
-  cout << &buffer[0] << '\n';
+  cout << buffer << '\n';
   return 0;
 }
