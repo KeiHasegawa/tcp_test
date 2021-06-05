@@ -1,0 +1,8 @@
+server.exe を動かしたときの netstat -p -l --numeric-ports の結果
+
+(Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.)
+稼働中のインターネット接続 (サーバーのみ)
+Proto 受信-Q 送信-Q 内部アドレス            外部アドレス            状態        PID/Program name
+...
+tcp        0      0 0.0.0.0:12345           0.0.0.0:*               LISTEN      14482/server.exe    
